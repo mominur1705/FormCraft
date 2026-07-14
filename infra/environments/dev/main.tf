@@ -3,7 +3,7 @@ terraform {
     bucket       = "formcraft-terraform-state-53c00bcc"
     key          = "dev/terraform.tfstate"
     region       = "us-east-1"
-    use_lockfile = true
+    dynamodb_table = "formcraft-terraform-locks"
     encrypt      = true
   }
 
