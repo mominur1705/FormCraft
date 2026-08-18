@@ -38,3 +38,23 @@ module "budgets" {
   alert_email  = var.alert_email
   budget_limit = "5"
 }
+
+data "aws_caller_identity" "current" {}
+
+module "dynamodb" {
+  source      = "../../modules/dynamodb"
+  environment = var.environment
+}
+
+module "s3" {
+  source      = "../../modules/s3"
+  environment = var.environment
+  account_id  = data.aws_caller_identity.current.account_id
+}
+
+module "iam" {
+  source             = "../../modules/iam"
+  environment        = var.environment
+  dynamodb_table_arn = module.dynamodb.table_arn
+  s3_bucket_arn      = module.s3.bucket_arn
+}

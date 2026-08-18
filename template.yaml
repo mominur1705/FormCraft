@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 30
+    Environment:
+      Variables:
+        DYNAMODB_TABLE: formcraft-dev
+        S3_BUCKET: formcraft-uploads-dev-local
+
+Resources:
+  FormCrudFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/functions/form_crud/
+      Handler: handler.lambda_handler
+      Events:
+        CreateForm:
+          Type: HttpApi
+          Properties:
+            Path: /forms
+            Method: POST
+        ListForms:
+          Type: HttpApi
+          Properties:
+            Path: /forms
+            Method: GET
+        GetForm:
+          Type: HttpApi
+          Properties:
+            Path: /forms/{formId}
+            Method: GET
+        DeleteForm:
+          Type: HttpApi
+          Properties:
+            Path: /forms/{formId}
+            Method: DELETE
+
+  ResponseSubmitFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/functions/response_submit/
+      Handler: handler.lambda_handler
+      Events:
+        SubmitResponse:
+          Type: HttpApi
+          Properties:
+            Path: /forms/{formId}/responses
+            Method: POST
+
+  PresignedUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/functions/presigned_url/
+      Handler: handler.lambda_handler
+      Events:
+        GetPresignedUrl:
+          Type: HttpApi
+          Properties:
+            Path: /uploads/presign
+            Method: POST
